@@ -6,10 +6,26 @@
     <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <VersionPrefix>1.0.1</VersionPrefix>
     <Title>Step Management for Apps</Title>
     <PackageId>Step</PackageId>
     <Authors>alidgn,alidogan</Authors>
+    <Description>Stepwise is a C# library designed to manage program flow in console applications using a step-by-step approach.</Description>
+    <Summary>Stepwise is a C# library designed to manage program flow in console applications using a step-by-step approach.</Summary>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIconUrl>https://raw.githubusercontent.com/alidgn/stepwise/main/icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/alidgn/stepwise</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/alidgn/stepwise.git</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageTags>step</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
