@@ -1,0 +1,99 @@
+using System.Reflection;
+
+namespace Stepwise;
+
+public class StepManager
+{
+    private static IList<Type> _steps;
+    private static Type _currentStep;
+    private static bool _stayInCurrentStep;
+    public static bool IsCompleted { get; set; }
+
+    public static async Task RunAsync()
+    {
+        while (!IsCompleted)
+        {
+            await RunStepAsync();
+        }
+    }
+
+    public static void SetNextStep(int stepOrder, bool forced = false)
+    {
+        _stayInCurrentStep = forced;
+        _currentStep = GetStepByOrder(stepOrder);
+    }
+
+    public static void SetNextStep<T>(bool forced = false) where T : Step
+    {
+        _stayInCurrentStep = forced;
+        _currentStep = typeof(T);
+    }
+
+    public static void SetNextStep()
+    {
+        var steps = GetSteps();
+
+        var current = steps.IndexOf(GetCurrentStep());
+        var next = current + 1;
+
+        if (steps.Count > next)
+        {
+            _currentStep = steps.ElementAt(next);
+            return;
+        }
+
+        IsCompleted = true;
+    }
+
+    public static Type GetCurrentStep()
+    {
+        return _currentStep ??= GetSteps()?.FirstOrDefault();
+    }
+
+    public static async Task RunStepAsync()
+    {
+        Console.Clear();
+
+        var currentStep = GetCurrentStep();
+        if (currentStep == null)
+        {
+            IsCompleted = true;
+            return;
+        }
+
+        await ((Step)Activator.CreateInstance(currentStep)!).RunAsync();
+
+        if (_stayInCurrentStep)
+        {
+            _stayInCurrentStep = false;
+            return;
+        }
+
+        if (currentStep == GetCurrentStep())
+        {
+            SetNextStep();
+        }
+    }
+
+    public static async Task RunStepAsync(Step step)
+    {
+        await step.RunAsync();
+    }
+
+    public static IList<Type> GetSteps()
+    {
+        return _steps ??= Assembly.GetExecutingAssembly().GetTypes()
+           .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Step)))
+           .OrderBy(x => x.GetCustomAttribute<StepAttribute>()!.Order).ToList();
+    }
+
+    public static void ForceComplete()
+    {
+        IsCompleted = true;
+    }
+
+    private static Type GetStepByOrder(int order)
+    {
+        return GetSteps().First(x => x.GetCustomAttribute<StepAttribute>()!.Order == order);
+    }
+}
