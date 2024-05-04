@@ -14,4 +14,4 @@ Stepwise is a C# library designed to manage program flow in console applications
 Stepwise can be installed via NuGet Package Manager. Run the following command in the Package Manager Console:
 
 ```bash
-dotnet add package Stepwise
+dotnet add package Step
