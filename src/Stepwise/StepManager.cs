@@ -5,6 +5,7 @@ namespace Stepwise;
 public class StepManager
 {
     private static IList<Type> _steps;
+    private static IList<Assembly> _assemblyList = [Assembly.GetExecutingAssembly()];
     private static Type _currentStep;
     private static bool _stayInCurrentStep;
     public static bool IsCompleted { get; set; }
@@ -82,9 +83,23 @@ public class StepManager
 
     public static IList<Type> GetSteps()
     {
-        return _steps ??= Assembly.GetExecutingAssembly().GetTypes()
-           .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Step)))
-           .OrderBy(x => x.GetCustomAttribute<StepAttribute>()!.Order).ToList();
+        var allStepTypes = new List<Type>();
+
+        if (_assemblyList == null || _assemblyList.Count == 0)
+        {
+            throw new Exception("There is no configured assembly");
+        }
+
+        foreach (var assembly in _assemblyList)
+        {
+            var steps = assembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Step)));
+            if (steps.Any())
+            {
+                allStepTypes.AddRange(steps);
+            }
+        }
+
+        return _steps ??= [.. allStepTypes.OrderBy(x => x.GetCustomAttribute<StepAttribute>()!.Order)];
     }
 
     public static void ForceComplete()
@@ -95,5 +110,18 @@ public class StepManager
     private static Type GetStepByOrder(int order)
     {
         return GetSteps().First(x => x.GetCustomAttribute<StepAttribute>()!.Order == order);
+    }
+
+    internal static void SetStepFromAssembly(params Assembly[] assemblies)
+    {
+        _assemblyList ??= [];
+
+        foreach (var assembly in assemblies)
+        {
+            if (!_assemblyList.Any(x => x == assembly))
+            {
+                _assemblyList.Add(assembly);
+            }
+        }
     }
 }
