@@ -92,7 +92,12 @@ public class StepManager
 
         foreach (var assembly in _assemblyList)
         {
-            var steps = assembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Step)));
+            var steps = assembly.GetTypes()
+                .Where(x => x.IsClass)
+                .Where(x => !x.IsAbstract)
+                .Where(x => x.IsSubclassOf(typeof(Step)))
+                .Where(x => x.GetCustomAttribute<StepAttribute>()!.Order.HasValue);
+
             if (steps.Any())
             {
                 allStepTypes.AddRange(steps);

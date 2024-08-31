@@ -1,9 +1,12 @@
-namespace Stepwise;
+﻿namespace Stepwise;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class StepAttribute : Attribute
 {
-    public int Order { get; set; } = int.MaxValue;
+    /// <summary>
+    /// This defines the order in which the step is executed. If not specified, step doesn't include in step pipeline.
+    /// </summary>
+    public int? Order { get; set; }
     public string Description { get; set; }
 
     public StepAttribute()
