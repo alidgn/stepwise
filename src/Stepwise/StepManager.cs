@@ -96,7 +96,7 @@ public class StepManager
                 .Where(x => x.IsClass)
                 .Where(x => !x.IsAbstract)
                 .Where(x => x.IsSubclassOf(typeof(Step)))
-                .Where(x => x.GetCustomAttribute<StepAttribute>()!.Order.HasValue);
+                .Where(x => x.GetCustomAttribute<StepAttribute>()!.Order > 0);
 
             if (steps.Any())
             {

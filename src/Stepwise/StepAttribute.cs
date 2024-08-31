@@ -4,9 +4,9 @@
 public class StepAttribute : Attribute
 {
     /// <summary>
-    /// This defines the order in which the step is executed. If not specified, step doesn't include in step pipeline.
+    /// This defines the order in which the step is executed. If not specified or specifying zero, the step doesn't include in the step pipeline.
     /// </summary>
-    public int? Order { get; set; }
+    public uint Order { get; set; }
     public string Description { get; set; }
 
     public StepAttribute()
